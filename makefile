@@ -101,6 +101,9 @@ include $(VRUI_MAKEDIR)/BasicMakefile
 # Set location of configuration file directory:
 CFLAGS += -DCONFIGDIR='"$(ETCINSTALLDIR)"'
 
+# Cap 3 edit
+CFLAGS += -std=c++11
+
 #
 # Calibration utility for Kinect 3D camera and projector:
 #
@@ -117,7 +120,8 @@ SARNDBOX_SOURCES = FrameFilter.cpp \
                    SurfaceRenderer.cpp \
                    WaterTable2.cpp \
                    RainMaker.cpp \
-                   Sandbox.cpp
+                   Sandbox.cpp \
+				   HeightMapStreamServer.cpp
 
 # Set location of shader directory:
 $(OBJDIR)/SurfaceRenderer.o: CFLAGS += -DSHADERDIR='"$(SHAREINSTALLDIR)/Shaders"'
