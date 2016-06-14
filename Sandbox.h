@@ -40,6 +40,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include <Kinect/FrameBuffer.h>
 #include <Kinect/FrameSource.h>
 
+/* CAP3 Edit */
+#include "HeightMapStreamServer.h"
 #include "RainMaker.h"
 
 /* Forward declarations: */
@@ -182,7 +184,9 @@ class Sandbox:public Vrui::Application,public GLObject
 	GLMotif::TextField* frameRateTextField;
 	GLMotif::TextFieldSlider* waterAttenuationSlider;
 	int controlPipeFd; // File descriptor of an optional named pipe to send control commands to a running AR Sandbox
-	
+
+	/* CAP3 Edit */
+	HeightMapStreamServer streamingServer;
 	/* Private methods: */
 	void rawDepthFrameDispatcher(const Kinect::FrameBuffer& frameBuffer); // Callback receiving raw depth frames from the Kinect camera; forwards them to the frame filter and rain maker objects
 	void receiveFilteredFrame(const Kinect::FrameBuffer& frameBuffer); // Callback receiving filtered depth frames from the filter object

@@ -599,6 +599,9 @@ Sandbox::Sandbox(int& argc,char**& argv)
 	LocalWaterTool::initClass(*Vrui::getToolManager());
 	addEventTool("Pause Topography",0,0);
 	
+	/* CAP3 Edit */
+	streamingServer.run();
+
 	/* Process command line parameters: */
 	bool printHelp=false;
 	int cameraIndex=0;
