@@ -1,4 +1,7 @@
-/bin
-/d
-/o
+/.vs
 /.vscode
+.VC.db
+slnx.sqlite
+VSWorkspaceSettings.json
+.suo
+.browse.VC.db
