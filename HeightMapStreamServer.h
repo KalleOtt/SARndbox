@@ -74,6 +74,8 @@ class HeightMapStreamServer {
 
         void addNewFrame(Kinect::FrameBuffer frame);
 
+        void stop();
+
     private:
         typedef std::set<connection_hdl,std::owner_less<connection_hdl> > con_list;
 

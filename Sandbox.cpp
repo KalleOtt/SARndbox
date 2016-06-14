@@ -594,13 +594,11 @@ Sandbox::Sandbox(int& argc,char**& argv)
 	 waterSpeedSlider(0),waterMaxStepsSlider(0),frameRateTextField(0),waterAttenuationSlider(0),
 	 controlPipeFd(-1)
 	{
+
 	/* Initialize the custom tool classes: */
 	WaterTool::initClass(*Vrui::getToolManager());
 	LocalWaterTool::initClass(*Vrui::getToolManager());
 	addEventTool("Pause Topography",0,0);
-	
-	/* CAP3 Edit */
-	streamingServer.run();
 
 	/* Process command line parameters: */
 	bool printHelp=false;
@@ -1004,6 +1002,10 @@ Sandbox::Sandbox(int& argc,char**& argv)
 			maxDist=dist;
 		}
 	Vrui::setNavigationTransformation(c,maxDist,Geometry::normal(Vrui::Vector(basePlane.getNormal())));
+	
+	/* Cap3 Edit */
+	std::thread t(std::bind(&HeightMapStreamServer::process_messages, &streamingServer));
+	streamingServer.run(9000);
 	}
 
 Sandbox::~Sandbox(void)
@@ -1023,7 +1025,7 @@ Sandbox::~Sandbox(void)
 	
 	delete mainMenu;
 	delete waterControlDialog;
-	
+
 	close(controlPipeFd);
 	}
 

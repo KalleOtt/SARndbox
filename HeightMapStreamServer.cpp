@@ -15,6 +15,19 @@ void HeightMapStreamServer::run(uint16_t port) {
     }
 }
 
+void HeightMapStreamServer::stop() {
+    m_server.stop();
+}
+
+void HeightMapStreamServer::on_open(connection_hdl hdl) {
+    {
+        lock_guard<mutex> guard(m_action_lock);
+        //std::cout << "on_open" << std::endl;
+        m_actions.push(action(SUBSCRIBE,hdl));
+    }
+    m_action_cond.notify_one();
+}
+
 void HeightMapStreamServer::on_close(connection_hdl hdl) {
     {
         lock_guard<mutex> guard(m_action_lock);
