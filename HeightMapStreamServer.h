@@ -1,5 +1,3 @@
-#define ASIO_STANDALONE
-
 #include "websocketpp/config/asio_no_tls.hpp"
 
 #include "websocketpp/server.hpp"
@@ -7,10 +5,10 @@
 #include <iostream>
 #include <set>
 
-/*#include <boost/thread.hpp>
+#include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/thread/condition_variable.hpp>*/
-#include "websocketpp/common/thread.hpp"
+#include <boost/thread/condition_variable.hpp>
+// #include "websocketpp/common/thread.hpp"
 
 #include "rxcpp/rx.hpp"
 #include <Kinect/FrameBuffer.h>
