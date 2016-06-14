@@ -56,9 +56,9 @@ class HeightMapStreamServer {
             m_server.init_asio();
 
             // Register handler callbacks
-            m_server.set_open_handler(bind(&broadcast_server::on_open,this,::_1));
-            m_server.set_close_handler(bind(&broadcast_server::on_close,this,::_1));
-            m_server.set_message_handler(bind(&broadcast_server::on_message,this,::_1,::_2));
+            m_server.set_open_handler(bind(&HeightMapStreamServer::on_open,this,::_1));
+            m_server.set_close_handler(bind(&HeightMapStreamServer::on_close,this,::_1));
+            m_server.set_message_handler(bind(&HeightMapStreamServer::on_message,this,::_1,::_2));
         }
 
 
