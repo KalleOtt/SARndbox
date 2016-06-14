@@ -102,7 +102,9 @@ include $(VRUI_MAKEDIR)/BasicMakefile
 CFLAGS += -DCONFIGDIR='"$(ETCINSTALLDIR)"'
 
 # Cap 3 edit
-CFLAGS += -std=c++11 -lboost_system
+LINKDIRFLAGS += -L$(HOME)/src/SARndbox-$(VERSION)/lib
+LINKLIBFLAGS += -lRxCpp -lboost_system
+CFLAGS += -std=c++11 
 
 #
 # Calibration utility for Kinect 3D camera and projector:
