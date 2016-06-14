@@ -1004,7 +1004,7 @@ Sandbox::Sandbox(int& argc,char**& argv)
 	Vrui::setNavigationTransformation(c,maxDist,Geometry::normal(Vrui::Vector(basePlane.getNormal())));
 	
 	/* Cap3 Edit */
-	std::thread t(std::bind(&HeightMapStreamServer::process_messages, &streamingServer));
+	streamingThread = new std::thread(std::bind(&HeightMapStreamServer::process_messages, &streamingServer));
 	streamingServer.run(9000);
 	}
 
@@ -1026,6 +1026,10 @@ Sandbox::~Sandbox(void)
 	delete mainMenu;
 	delete waterControlDialog;
 
+	/* Cap3 Edit */
+	streamingThread->join();
+	delete streamingThread;
+
 	close(controlPipeFd);
 	}
 
@@ -1036,6 +1040,7 @@ void Sandbox::frame(void)
 		{
 		/* Update the surface renderer's depth image: */
 		surfaceRenderer->setDepthImage(filteredFrames.getLockedValue());
+		streamingServer.addNewFrame(filteredFrames.getLockedValue());
 		}
 	
 	/* Lock the most recent rain object list: */

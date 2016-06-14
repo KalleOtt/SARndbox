@@ -213,6 +213,9 @@ class Sandbox:public Vrui::Application,public GLObject
 	
 	/* Methods from GLObject: */
 	virtual void initContext(GLContextData& contextData) const;
+
+	/* Cap3 Edit */
+	std::thread *streamingThread;
 	};
 
 #endif

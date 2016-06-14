@@ -51,15 +51,7 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 class HeightMapStreamServer {
     public:
-        HeightMapStreamServer() {
-            // Initialize Asio Transport
-            m_server.init_asio();
-
-            // Register handler callbacks
-            m_server.set_open_handler(bind(&HeightMapStreamServer::on_open,this,::_1));
-            m_server.set_close_handler(bind(&HeightMapStreamServer::on_close,this,::_1));
-            m_server.set_message_handler(bind(&HeightMapStreamServer::on_message,this,::_1,::_2));
-        }
+        HeightMapStreamServer();
 
 
         void run(uint16_t port);
@@ -75,8 +67,9 @@ class HeightMapStreamServer {
         void addNewFrame(Kinect::FrameBuffer frame);
 
         void stop();
-
+        virtual ~HeightMapStreamServer();
     private:
+        bool running;
         typedef std::set<connection_hdl,std::owner_less<connection_hdl> > con_list;
 
         server m_server;
@@ -88,5 +81,5 @@ class HeightMapStreamServer {
         condition_variable m_action_cond;
 
         rxcpp::rxsub::subject<Kinect::FrameBuffer> frameSubject;
-
+        rxcpp::subscription frameSubscription;
 };

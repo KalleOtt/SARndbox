@@ -104,7 +104,7 @@ CFLAGS += -DCONFIGDIR='"$(ETCINSTALLDIR)"'
 # Cap 3 edit
 LINKDIRFLAGS += -L$(HOME)/src/SARndbox-$(VERSION)/lib
 LINKLIBFLAGS += -lRxCpp -lboost_system
-CFLAGS += -std=c++11 
+CFLAGS += -std=c++1y
 
 #
 # Calibration utility for Kinect 3D camera and projector:

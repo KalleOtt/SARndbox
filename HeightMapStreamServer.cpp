@@ -1,6 +1,18 @@
 #include "HeightMapStreamServer.h"
 
+HeightMapStreamServer::HeightMapStreamServer() {
+    running = false;
+    // Initialize Asio Transport
+    m_server.init_asio();
+
+    // Register handler callbacks
+    m_server.set_open_handler(bind(&HeightMapStreamServer::on_open,this,::_1));
+    m_server.set_close_handler(bind(&HeightMapStreamServer::on_close,this,::_1));
+    m_server.set_message_handler(bind(&HeightMapStreamServer::on_message,this,::_1,::_2));
+}
+
 void HeightMapStreamServer::run(uint16_t port) {
+    running = true;
     // listen on specified port
     m_server.listen(port);
 
@@ -13,10 +25,30 @@ void HeightMapStreamServer::run(uint16_t port) {
     } catch (const std::exception & e) {
         std::cout << e.what() << std::endl;
     }
+    frameSubscription = frameSubject.get_observable()
+            .subscribe([&](auto frame) {
+                lock_guard<mutex> guard(m_connection_lock);
+                size_t frameSize = frame.getSize(0) * frame.getSize(1) * sizeof(float);
+                con_list::iterator it;
+                for (it = m_connections.begin(); it != m_connections.end(); ++it) {
+                    m_server.send(*it, frame.getBuffer(), frameSize, websocketpp::frame::opcode::binary);
+                }
+            });
+
+}
+
+HeightMapStreamServer::~HeightMapStreamServer() {
+    std::cout << "stop server";
+    running = false;
+    m_server.stop();
+    m_server.stop_listening();
+    m_server.stop_perpetual();
+
+    stop();
 }
 
 void HeightMapStreamServer::stop() {
-    m_server.stop();
+
 }
 
 void HeightMapStreamServer::on_open(connection_hdl hdl) {
@@ -48,7 +80,7 @@ void HeightMapStreamServer::on_message(connection_hdl hdl, server::message_ptr m
 }
 
 void HeightMapStreamServer::process_messages() {
-    while(1) {
+    while(running) {
         unique_lock<mutex> lock(m_action_lock);
 
         while(m_actions.empty()) {
