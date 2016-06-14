@@ -5,3 +5,6 @@ slnx.sqlite
 VSWorkspaceSettings.json
 .suo
 .browse.VC.db
+/bin
+/d
+/o
