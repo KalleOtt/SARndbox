@@ -85,6 +85,6 @@ class HeightMapStreamServer {
         mutex m_connection_lock;
         condition_variable m_action_cond;
 
-        rxcpp::rxsub::subject<FrameBuffer> frameSubject;
+        rxcpp::rxsub::subject<Kinect::FrameBuffer> frameSubject;
 
 };
