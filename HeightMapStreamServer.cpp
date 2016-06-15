@@ -25,7 +25,6 @@ void HeightMapStreamServer::run() {
             .observe_on(threads)
             .subscribe_on(threads)
             .subscribe([this](auto frame) {
-                std::cout << "got frame send it over websocket" << std::endl;
                 lock_guard<mutex> guard(m_connection_lock);
                 size_t frameSize = frame.getSize(0) * frame.getSize(1) * sizeof(float);
                 con_list::iterator it;
@@ -90,7 +89,8 @@ void HeightMapStreamServer::on_message(connection_hdl hdl, server::message_ptr m
 }
 
 void HeightMapStreamServer::process_messages() {
-    while(running) {
+    std::cout << "process messages" << std::endl;
+    while(true) {
         unique_lock<mutex> lock(m_action_lock);
 
         while(m_actions.empty()) {
@@ -103,12 +103,15 @@ void HeightMapStreamServer::process_messages() {
         lock.unlock();
 
         if (a.type == SUBSCRIBE) {
+            std::cout << "process messages SUBSCRIBE" << std::endl;
             lock_guard<mutex> guard(m_connection_lock);
             m_connections.insert(a.hdl);
         } else if (a.type == UNSUBSCRIBE) {
+            std::cout << "process messages UNSUBSCRIBE" << std::endl;
             lock_guard<mutex> guard(m_connection_lock);
             m_connections.erase(a.hdl);
         } else if (a.type == MESSAGE) {
+            std::cout << "process messages MESSAGE" << std::endl;
             lock_guard<mutex> guard(m_connection_lock);
 
             con_list::iterator it;
