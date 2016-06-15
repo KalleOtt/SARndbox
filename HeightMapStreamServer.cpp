@@ -4,7 +4,8 @@ HeightMapStreamServer::HeightMapStreamServer() {
     running = false;
     // Initialize Asio Transport
     m_server.init_asio();
-
+    m_server.set_error_channels(websocketpp::log::elevel::all);
+    m_server.set_access_channels(websocketpp::log::alevel::all ^ websocketpp::log::alevel::frame_payload);
     // Register handler callbacks
     m_server.set_open_handler(bind(&HeightMapStreamServer::on_open,this,::_1));
     m_server.set_close_handler(bind(&HeightMapStreamServer::on_close,this,::_1));
@@ -122,6 +123,6 @@ void HeightMapStreamServer::process_messages() {
     }
 }
 
-void HeightMapStreamServer::addNewFrame(Kinect::FrameBuffer frame) {
+void HeightMapStreamServer::addNewFrame(Kinect::FrameBuffer &frame) {
     frameSubject.get_subscriber().on_next(frame);
 }
