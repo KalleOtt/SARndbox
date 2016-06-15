@@ -24,12 +24,15 @@ void HeightMapStreamServer::run() {
     frameSubscription = frameSubject.get_observable()
             .observe_on(threads)
             .subscribe_on(threads)
-            .subscribe([&](auto frame) {
+            .subscribe([this](auto frame) {
                 std::cout << "got frame send it over websocket" << std::endl;
                 lock_guard<mutex> guard(m_connection_lock);
                 size_t frameSize = frame.getSize(0) * frame.getSize(1) * sizeof(float);
                 con_list::iterator it;
+                int connectionCounter = 1;
                 for (it = m_connections.begin(); it != m_connections.end(); ++it) {
+
+                    std::cout << "sending frame to connection " << connectionCounter << std::endl;
                     m_server.send(*it, frame.getBuffer(), frameSize, websocketpp::frame::opcode::binary);
                 }
             });
