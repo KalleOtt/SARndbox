@@ -32,8 +32,6 @@ void HeightMapStreamServer::run() {
                 con_list::iterator it;
                 int connectionCounter = 1;
                 for (it = m_connections.begin(); it != m_connections.end(); ++it) {
-
-                    std::cout << "sending frame to connection " << connectionCounter << std::endl;
                     m_server.send(*it, frame.getBuffer(), frameSize, websocketpp::frame::opcode::binary);
                 }
             });
@@ -102,15 +100,12 @@ void HeightMapStreamServer::process_messages() {
         lock.unlock();
 
         if (a.type == SUBSCRIBE) {
-            std::cout << "process messages SUBSCRIBE" << std::endl;
             lock_guard<mutex> guard(m_connection_lock);
             m_connections.insert(a.hdl);
         } else if (a.type == UNSUBSCRIBE) {
-            std::cout << "process messages UNSUBSCRIBE" << std::endl;
             lock_guard<mutex> guard(m_connection_lock);
             m_connections.erase(a.hdl);
         } else if (a.type == MESSAGE) {
-            std::cout << "process messages MESSAGE" << std::endl;
             lock_guard<mutex> guard(m_connection_lock);
 
             con_list::iterator it;
