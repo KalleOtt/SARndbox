@@ -11,10 +11,10 @@ HeightMapStreamServer::HeightMapStreamServer() {
     m_server.set_message_handler(bind(&HeightMapStreamServer::on_message,this,::_1,::_2));
 }
 
-void HeightMapStreamServer::run(uint16_t port) {
+void HeightMapStreamServer::run() {
     running = true;
     // listen on specified port
-    m_server.listen(port);
+    m_server.listen(9000);
 
     // Start the server accept loop
     m_server.start_accept();
