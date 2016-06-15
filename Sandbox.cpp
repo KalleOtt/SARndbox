@@ -1026,6 +1026,7 @@ Sandbox::~Sandbox(void)
 	delete waterControlDialog;
 
 	/* Cap3 Edit */
+	streamingServer.stop();
 	streamingThread.join();
 
 	close(controlPipeFd);

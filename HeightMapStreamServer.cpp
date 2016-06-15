@@ -18,8 +18,9 @@ void HeightMapStreamServer::run() {
 
     // Start the server accept loop
     m_server.start_accept();
+    thread processingThread(bind(&HeightMapStreamServer::process_messages,this));
 
-        std::cout << "starting frameSubscription" << std::endl;
+    std::cout << "starting frameSubscription" << std::endl;
     auto threads = rxcpp::observe_on_event_loop();
     frameSubscription = frameSubject.get_observable()
             .observe_on(threads)
@@ -42,22 +43,19 @@ void HeightMapStreamServer::run() {
     } catch (const std::exception & e) {
         std::cout << e.what() << std::endl;
     }
-
-
+    processingThread.join();
 }
 
 HeightMapStreamServer::~HeightMapStreamServer() {
-    std::cout << "stop server";
-    running = false;
-    m_server.stop();
-    m_server.stop_listening();
-    m_server.stop_perpetual();
 
-    stop();
 }
 
 void HeightMapStreamServer::stop() {
-
+    running = false;
+    std::cout << "stop server";
+    m_server.stop();
+    m_server.stop_listening();
+    m_server.stop_perpetual();
 }
 
 void HeightMapStreamServer::on_open(connection_hdl hdl) {
@@ -90,7 +88,7 @@ void HeightMapStreamServer::on_message(connection_hdl hdl, server::message_ptr m
 
 void HeightMapStreamServer::process_messages() {
     std::cout << "process messages" << std::endl;
-    while(true) {
+    while(running) {
         unique_lock<mutex> lock(m_action_lock);
 
         while(m_actions.empty()) {
