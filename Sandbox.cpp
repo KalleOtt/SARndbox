@@ -1004,7 +1004,7 @@ Sandbox::Sandbox(int& argc,char**& argv)
 	Vrui::setNavigationTransformation(c,maxDist,Geometry::normal(Vrui::Vector(basePlane.getNormal())));
 	
 	/* Cap3 Edit */
-	streamingThread = std::thread(std::bind(&HeightMapStreamServer::run, &streamingServer), 9000);
+	streamingThread = std::thread(std::bind(&HeightMapStreamServer::run, &streamingServer));
 	}
 
 Sandbox::~Sandbox(void)
@@ -1026,7 +1026,7 @@ Sandbox::~Sandbox(void)
 	delete waterControlDialog;
 
 	/* Cap3 Edit */
-	streamingThread->join();
+	streamingThread.join();
 
 	close(controlPipeFd);
 	}

@@ -54,7 +54,7 @@ class HeightMapStreamServer {
         HeightMapStreamServer();
 
 
-        void run(uint16_t port);
+        void run();
 
         void on_open(connection_hdl hdl);
 
