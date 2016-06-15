@@ -19,14 +19,13 @@ void HeightMapStreamServer::run(uint16_t port) {
     // Start the server accept loop
     m_server.start_accept();
 
-    // Start the ASIO io_service run loop
-    try {
-        m_server.run();
-    } catch (const std::exception & e) {
-        std::cout << e.what() << std::endl;
-    }
+        std::cout << "starting frameSubscription" << std::endl;
+    auto threads = rxcpp::observe_on_event_loop();
     frameSubscription = frameSubject.get_observable()
+            .observe_on(threads)
+            .subscribe_on(threads)
             .subscribe([&](auto frame) {
+                std::cout << "got frame send it over websocket" << std::endl;
                 lock_guard<mutex> guard(m_connection_lock);
                 size_t frameSize = frame.getSize(0) * frame.getSize(1) * sizeof(float);
                 con_list::iterator it;
@@ -34,6 +33,14 @@ void HeightMapStreamServer::run(uint16_t port) {
                     m_server.send(*it, frame.getBuffer(), frameSize, websocketpp::frame::opcode::binary);
                 }
             });
+
+    // Start the ASIO io_service run loop
+    try {
+        m_server.run();
+    } catch (const std::exception & e) {
+        std::cout << e.what() << std::endl;
+    }
+
 
 }
 
