@@ -1004,8 +1004,7 @@ Sandbox::Sandbox(int& argc,char**& argv)
 	Vrui::setNavigationTransformation(c,maxDist,Geometry::normal(Vrui::Vector(basePlane.getNormal())));
 	
 	/* Cap3 Edit */
-	streamingThread = new std::thread(std::bind(&HeightMapStreamServer::process_messages, &streamingServer));
-	streamingServer.run(9000);
+	streamingThread = std::thread(std::bind(&HeightMapStreamServer::run, &streamingServer), 9000);
 	}
 
 Sandbox::~Sandbox(void)
@@ -1028,7 +1027,6 @@ Sandbox::~Sandbox(void)
 
 	/* Cap3 Edit */
 	streamingThread->join();
-	delete streamingThread;
 
 	close(controlPipeFd);
 	}
