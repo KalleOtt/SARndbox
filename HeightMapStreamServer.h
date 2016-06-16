@@ -82,4 +82,6 @@ class HeightMapStreamServer {
 
         rxcpp::rxsub::subject<Kinect::FrameBuffer> frameSubject;
         rxcpp::subscription frameSubscription;
+
+        unsigned long lastFrameTransmission;
 };

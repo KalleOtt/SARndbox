@@ -11,6 +11,7 @@ HeightMapStreamServer::HeightMapStreamServer() {
     m_server.set_open_handler(bind(&HeightMapStreamServer::on_open,this,::_1));
     m_server.set_close_handler(bind(&HeightMapStreamServer::on_close,this,::_1));
     m_server.set_message_handler(bind(&HeightMapStreamServer::on_message,this,::_1,::_2));
+    lastFrameTransmission = 0;
 }
 
 void HeightMapStreamServer::run() {
@@ -120,5 +121,14 @@ void HeightMapStreamServer::process_messages() {
 }
 
 void HeightMapStreamServer::addNewFrame(Kinect::FrameBuffer &frame) {
-    frameSubject.get_subscriber().on_next(frame);
+
+    unsigned long now = 
+    std::chrono::duration_cast<std::chrono::milliseconds>
+        (std::chrono::system_clock::now().time_since_epoch()).count();
+
+    if(now - lastFrameTransmission > 500) {
+        frameSubject.get_subscriber().on_next(frame);
+        lastFrameTransmission = now;
+    }
+
 }
