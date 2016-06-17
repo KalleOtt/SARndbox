@@ -50,7 +50,9 @@ class RainMaker
 	typedef Geometry::Point<double,3> Point;
 	typedef Geometry::Plane<double,3> Plane;
 	typedef Geometry::ProjectiveTransformation<double,3> PTransform;
-	
+
+
+
 	struct Blob // Structure to describe a detected object in camera space
 		{
 		/* Elements: */
@@ -61,7 +63,11 @@ class RainMaker
 	
 	typedef std::vector<Blob> BlobList; // Type for lists of detected objects
 	typedef Misc::FunctionCall<const BlobList&> OutputBlobsFunction; // Type for functions called when a new object list has been extracted
-	
+		
+	/* Cap3 Edit */
+	std::vector<Point> externalBlobs;
+	void setExternalBlobs(std::vector<Point>& newExternalList);
+
 	/* Elements: */
 	private:
 	unsigned int depthSize[2]; // Width and height of incoming depth frames

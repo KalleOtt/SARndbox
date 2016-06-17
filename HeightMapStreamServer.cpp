@@ -1,4 +1,31 @@
 #include "HeightMapStreamServer.h"
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
+#include <chrono>
+
+
+using namespace boost; 
+
+regex rainExpression("-rain\(([0-9]+),([0-9]+)\)$"); 
+
+int processPotentialRainMessage(const char* message)
+{ 
+   cmatch matches; 
+   if(regex_match(message, matches, rainExpression))
+   { 
+      // matches[0] contains the whole string 
+      // matches[1] contains the x coordinate string
+      // matches[2] contains the y coordinate string
+      int x = std::atoi(matches[1].first); 
+      int y = std::atoi(matches[2].first); 
+      int z = 42;
+      return Point(double(x), double(y), double(z));
+   }
+   else{
+     return null;  
+   }  
+}
 
 HeightMapStreamServer::HeightMapStreamServer() {
     running = false;
@@ -10,7 +37,7 @@ HeightMapStreamServer::HeightMapStreamServer() {
     // Register handler callbacks
     m_server.set_open_handler(bind(&HeightMapStreamServer::on_open,this,::_1));
     m_server.set_close_handler(bind(&HeightMapStreamServer::on_close,this,::_1));
-    m_server.set_message_handler(bind(&HeightMapStreamServer::on_message,this,::_1,::_2));
+    m_server.set_message_handler(bind(&HeightMapStreamServer::,this,::_1,::_2));
     lastFrameTransmission = 0;
 }
 
@@ -25,6 +52,8 @@ void HeightMapStreamServer::run() {
 
     std::cout << "starting frameSubscription" << std::endl;
     auto threads = rxcpp::observe_on_event_loop();
+
+
     frameSubscription = frameSubject.get_observable()
             .observe_on(threads)
             .subscribe_on(threads)
@@ -35,6 +64,21 @@ void HeightMapStreamServer::run() {
                 int connectionCounter = 1;
                 for (it = m_connections.begin(); it != m_connections.end(); ++it) {
                     m_server.send(*it, frame.getBuffer(), frameSize, websocketpp::frame::opcode::binary);
+                }
+            });
+
+
+    using namespace std::chrono;
+
+    #define TIME_UNIT seconds
+
+    rainSubscription = rainPointSubject.get_observable()
+            .observe_on(threads)
+            .subscribe_on(threads)
+            .buffer_with_time(TIME_UNIT(10), TIME_UNIT(1))
+            .subscribe([](std::vector<Point> rainPoints){
+                if(rainMaker) {
+                    rainMaker->setExternalBlobs(rainPoints);
                 }
             });
 
@@ -77,11 +121,11 @@ void HeightMapStreamServer::on_close(connection_hdl hdl) {
     m_action_cond.notify_one();
 }
 
-void HeightMapStreamServer::on_message(connection_hdl hdl, server::message_ptr msg) {
+void HeightMapStreamServer::(connection_hdl hdl, server::message_ptr msg) {
     // queue message up for sending by processing thread
     {
         lock_guard<mutex> guard(m_action_lock);
-        //std::cout << "on_message" << std::endl;
+        //std::cout << "" << std::endl;
         m_actions.push(action(MESSAGE,hdl,msg));
     }
     m_action_cond.notify_one();
@@ -112,7 +156,15 @@ void HeightMapStreamServer::process_messages() {
 
             con_list::iterator it;
             for (it = m_connections.begin(); it != m_connections.end(); ++it) {
-                m_server.send(*it,a.msg);
+                string payload = a.msg.get_payload();
+                auto rainPoint = processPotentialRainMessage(payload); 
+                if(rainPoint != null) {
+                    rainPointSubject.get_subscriber().on_next(rainPoint);
+                }
+                else {
+                    m_server.send(*it,a.msg);
+                }
+
             }
         } else {
             // undefined.

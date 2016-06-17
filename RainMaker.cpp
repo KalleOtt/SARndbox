@@ -204,7 +204,7 @@ Methods of class RainMaker:
 
 template <class DepthPixelParam>
 inline
-void RainMaker::extractBlobs(const Kinect::FrameBuffer& depthFrame,const ValidPixelProperty& vpp,RainMaker::BlobList& blobsCc)
+void RainMaker::(const Kinect::FrameBuffer& depthFrame,const ValidPixelProperty& vpp,RainMaker::BlobList& blobsCc)
 	{
 	/* Extract raw blobs from the depth frame: */
 	std::vector< ::Blob<DepthPixelParam> > blobsDic=findBlobs(depthSize,static_cast<const DepthPixelParam*>(depthFrame.getBuffer()),vpp);
@@ -231,6 +231,18 @@ void RainMaker::extractBlobs(const Kinect::FrameBuffer& depthFrame,const ValidPi
 			/* Store the blob: */
 			blobsCc.push_back(blobCc);
 			}
+
+		/* Cap3 Edit */
+		for(int i = 0; i < externalBlobs.size(); i++) {
+			auto point = externalBlobs[i];
+			auto x = point[0];
+			auto y = point[1];
+			auto z = depthFrame.getBuffer()[y*depthFrame.getSize(1)+x];
+			Blob rainBlob;
+			rainBlob.radius = 1;
+			rainBlob.centroid = Point(x, y, z);
+			blobsCc.push_back(rainBlob);
+		}
 	}
 
 void* RainMaker::detectionThreadMethod(void)
@@ -270,9 +282,9 @@ void* RainMaker::detectionThreadMethod(void)
 			/* Detect all objects in the depth frame between the min and max planes: */
 			BlobList blobsCc;
 			if(depthIsFloat)
-				extractBlobs<float>(depthFrame,vpp,blobsCc);
+				<float>(depthFrame,vpp,blobsCc);
 			else
-				extractBlobs<unsigned short>(depthFrame,vpp,blobsCc);
+				<unsigned short>(depthFrame,vpp,blobsCc);
 			
 			/* Call the callback function: */
 			(*outputBlobsFunction)(blobsCc);
@@ -281,6 +293,14 @@ void* RainMaker::detectionThreadMethod(void)
 	
 	return 0;
 	}
+
+void RainMaker::setExternalBlobs(&BlobList newExternalList) {
+	Threads::MutexCond::Lock inputLock(inputCond);
+	externalBlobs.clear();
+	for(int i = 0; i < newExternalList.size(); i++) {
+		externalBlobs.push(newExternalList[i]);
+	}
+}
 
 RainMaker::RainMaker(const unsigned int sDepthSize[2],const unsigned int sColorSize[2],const RainMaker::PTransform& sDepthProjection,const RainMaker::PTransform& sColorProjection,const RainMaker::Plane& basePlane,double minElevation,double maxElevation,int sMinBlobSize)
 	:depthIsFloat(false),

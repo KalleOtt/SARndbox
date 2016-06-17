@@ -13,6 +13,11 @@
 #include "rxcpp/rx.hpp"
 #include <Kinect/FrameBuffer.h>
 
+#include <Geometry/Point.h>
+typedef Geometry::Point<double,3> Point;
+
+#include "RainMaker.h"
+
 typedef websocketpp::server<websocketpp::config::asio> server;
 
 using websocketpp::connection_hdl;
@@ -81,7 +86,11 @@ class HeightMapStreamServer {
         condition_variable m_action_cond;
 
         rxcpp::rxsub::subject<Kinect::FrameBuffer> frameSubject;
+        rxcpp::rxsub::subject<Point> rainPointSubject;
         rxcpp::subscription frameSubscription;
+        rxcpp::subscription rainSubscription;
 
         unsigned long lastFrameTransmission;
+
+        RainMaker * rainMaker;
 };
