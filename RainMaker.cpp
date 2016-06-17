@@ -237,7 +237,7 @@ void RainMaker::extractBlobs(const Kinect::FrameBuffer& depthFrame,const ValidPi
 			auto point = externalBlobs[i];
 			auto x = point[0];
 			auto y = point[1];
-			auto z = static_cast<float*>(depthFrame.getBuffer())[((int)y)*depthFrame.getSize(1)+((int)x)];
+			auto z = static_cast<const float*>(depthFrame.getBuffer())[((int)y)*depthFrame.getSize(1)+((int)x)];
 			Blob rainBlob;
 			rainBlob.radius = 1;
 			rainBlob.centroid = Point(x, y, z);
@@ -298,7 +298,7 @@ void RainMaker::setExternalBlobs(std::vector<Point>& newExternalList) {
 	Threads::MutexCond::Lock inputLock(inputCond);
 	externalBlobs.clear();
 	for(int i = 0; i < newExternalList.size(); i++) {
-		externalBlobs.push(newExternalList[i]);
+		externalBlobs.push_back(newExternalList[i]);
 	}
 }
 
