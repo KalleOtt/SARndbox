@@ -4,9 +4,9 @@
 #include <boost/regex.hpp>
 #include <chrono>
 
-regex rainExpression("-rain\\(([0-9]+),([0-9]+)\\)$"); 
+boost::regex rainExpression("-rain\\(([0-9]+),([0-9]+)\\)$"); 
 
-Point processRainMessage(cmatch& matches)
+Point processRainMessage(boost::cmatch& matches)
 { 
       // matches[0] contains the whole string 
       // matches[1] contains the x coordinate string
@@ -147,8 +147,8 @@ void HeightMapStreamServer::process_messages() {
             con_list::iterator it;
             for (it = m_connections.begin(); it != m_connections.end(); ++it) {
                 string payload = a.msg.get_payload();
-                cmatch matches;
-                if(regex_match(message, matches, rainExpression)) {
+                boost::cmatch matches;
+                if(boost::regex_match(message, matches, rainExpression)) {
                     auto rainPoint = processRainMessage(matches);
                     rainPointSubject.get_subscriber().on_next(rainPoint);
                 }
