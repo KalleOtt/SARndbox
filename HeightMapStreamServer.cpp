@@ -41,7 +41,7 @@ void HeightMapStreamServer::run() {
 
     // Start the server accept loop
     m_server.start_accept();
-    thread processingThread(bind(&HeightMapStreamServer::process_messages,this));
+    std::thread processingThread(bind(&HeightMapStreamServer::process_messages,this));
 
     std::cout << "starting frameSubscription" << std::endl;
     auto threads = rxcpp::observe_on_event_loop();
