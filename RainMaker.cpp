@@ -204,7 +204,7 @@ Methods of class RainMaker:
 
 template <class DepthPixelParam>
 inline
-void RainMaker::(const Kinect::FrameBuffer& depthFrame,const ValidPixelProperty& vpp,RainMaker::BlobList& blobsCc)
+void RainMaker::extractBlobs(const Kinect::FrameBuffer& depthFrame,const ValidPixelProperty& vpp,RainMaker::BlobList& blobsCc)
 	{
 	/* Extract raw blobs from the depth frame: */
 	std::vector< ::Blob<DepthPixelParam> > blobsDic=findBlobs(depthSize,static_cast<const DepthPixelParam*>(depthFrame.getBuffer()),vpp);
