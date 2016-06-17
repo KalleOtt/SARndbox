@@ -9,7 +9,7 @@ using namespace boost;
 
 regex rainExpression("-rain\\(([0-9]+),([0-9]+)\\)$"); 
 
-int processPotentialRainMessage(const char* message)
+Point processPotentialRainMessage(const char* message)
 { 
    cmatch matches; 
    if(regex_match(message, matches, rainExpression))
