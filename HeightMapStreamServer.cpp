@@ -51,7 +51,7 @@ void HeightMapStreamServer::run() {
             .observe_on(threads)
             .subscribe_on(threads)
             .subscribe([this](auto frame) {
-                lock_guard<mutex> guard(m_connection_lock);
+                std::lock_guard<mutex> guard(m_connection_lock);
                 size_t frameSize = frame.getSize(0) * frame.getSize(1) * sizeof(float);
                 con_list::iterator it;
                 int connectionCounter = 1;
