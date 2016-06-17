@@ -51,7 +51,7 @@ void HeightMapStreamServer::run() {
             .observe_on(threads)
             .subscribe_on(threads)
             .subscribe([this](auto frame) {
-                std::lock_guard<mutex> guard(m_connection_lock);
+                std::lock_guard<std::mutex> guard(m_connection_lock);
                 size_t frameSize = frame.getSize(0) * frame.getSize(1) * sizeof(float);
                 con_list::iterator it;
                 int connectionCounter = 1;
@@ -98,7 +98,7 @@ void HeightMapStreamServer::stop() {
 
 void HeightMapStreamServer::on_open(connection_hdl hdl) {
     {
-        std::lock_guard<mutex> guard(m_action_lock);
+        std::lock_guard<std::mutex> guard(m_action_lock);
         //std::cout << "on_open" << std::endl;
         m_actions.push(action(SUBSCRIBE,hdl));
     }
@@ -107,7 +107,7 @@ void HeightMapStreamServer::on_open(connection_hdl hdl) {
 
 void HeightMapStreamServer::on_close(connection_hdl hdl) {
     {
-        std::lock_guard<mutex> guard(m_action_lock);
+        std::lock_guard<std::mutex> guard(m_action_lock);
         //std::cout << "on_close" << std::endl;
         m_actions.push(action(UNSUBSCRIBE,hdl));
     }
@@ -117,7 +117,7 @@ void HeightMapStreamServer::on_close(connection_hdl hdl) {
 void HeightMapStreamServer::on_message(connection_hdl hdl, server::message_ptr msg) {
     // queue message up for sending by processing thread
     {
-        std::lock_guard<mutex> guard(m_action_lock);
+        std::lock_guard<std::mutex> guard(m_action_lock);
         //std::cout << "on_message" << std::endl;
         m_actions.push(action(MESSAGE,hdl,msg));
     }
@@ -127,7 +127,7 @@ void HeightMapStreamServer::on_message(connection_hdl hdl, server::message_ptr m
 void HeightMapStreamServer::process_messages() {
     std::cout << "process messages" << std::endl;
     while(running) {
-        std::unique_lock<mutex> lock(m_action_lock);
+        std::unique_lock<std::mutex> lock(m_action_lock);
 
         while(m_actions.empty()) {
             m_action_cond.wait(lock);
@@ -139,13 +139,13 @@ void HeightMapStreamServer::process_messages() {
         lock.unlock();
 
         if (a.type == SUBSCRIBE) {
-            std::lock_guard<mutex> guard(m_connection_lock);
+            std::lock_guard<std::mutex> guard(m_connection_lock);
             m_connections.insert(a.hdl);
         } else if (a.type == UNSUBSCRIBE) {
-            std::lock_guard<mutex> guard(m_connection_lock);
+            std::lock_guard<std::mutex> guard(m_connection_lock);
             m_connections.erase(a.hdl);
         } else if (a.type == MESSAGE) {
-            std::lock_guard<mutex> guard(m_connection_lock);
+            std::lock_guard<std::mutex> guard(m_connection_lock);
 
             con_list::iterator it;
             for (it = m_connections.begin(); it != m_connections.end(); ++it) {
