@@ -9,11 +9,8 @@ using namespace boost;
 
 regex rainExpression("-rain\\(([0-9]+),([0-9]+)\\)$"); 
 
-Point processPotentialRainMessage(const char* message)
+Point processRainMessage(cmatch& matches)
 { 
-   cmatch matches; 
-   if(regex_match(message, matches, rainExpression))
-   { 
       // matches[0] contains the whole string 
       // matches[1] contains the x coordinate string
       // matches[2] contains the y coordinate string
@@ -21,10 +18,6 @@ Point processPotentialRainMessage(const char* message)
       int y = std::atoi(matches[2].first); 
       int z = 42;
       return Point(double(x), double(y), double(z));
-   }
-   else{
-     return NULL;  
-   }  
 }
 
 HeightMapStreamServer::HeightMapStreamServer() {
@@ -157,8 +150,9 @@ void HeightMapStreamServer::process_messages() {
             con_list::iterator it;
             for (it = m_connections.begin(); it != m_connections.end(); ++it) {
                 string payload = a.msg.get_payload();
-                auto rainPoint = processPotentialRainMessage(payload); 
-                if(rainPoint != null) {
+                cmatch matches;
+                if(regex_match(message, matches, rainExpression)) {
+                    auto rainPoint = processRainMessage(matches);
                     rainPointSubject.get_subscriber().on_next(rainPoint);
                 }
                 else {
