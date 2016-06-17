@@ -282,9 +282,9 @@ void* RainMaker::detectionThreadMethod(void)
 			/* Detect all objects in the depth frame between the min and max planes: */
 			BlobList blobsCc;
 			if(depthIsFloat)
-				<float>(depthFrame,vpp,blobsCc);
+				extractBlobs<float>(depthFrame,vpp,blobsCc);
 			else
-				<unsigned short>(depthFrame,vpp,blobsCc);
+				extractBlobs<unsigned short>(depthFrame,vpp,blobsCc);
 			
 			/* Call the callback function: */
 			(*outputBlobsFunction)(blobsCc);
