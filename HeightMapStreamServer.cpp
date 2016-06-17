@@ -7,7 +7,7 @@
 
 using namespace boost; 
 
-regex rainExpression("-rain\(([0-9]+),([0-9]+)\)$"); 
+regex rainExpression("-rain\\(([0-9]+),([0-9]+)\\)$"); 
 
 int processPotentialRainMessage(const char* message)
 { 
