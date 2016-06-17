@@ -146,9 +146,9 @@ void HeightMapStreamServer::process_messages() {
 
             con_list::iterator it;
             for (it = m_connections.begin(); it != m_connections.end(); ++it) {
-                string payload = a.msg.get_payload();
+                std::string payload = a.msg.get_payload();
                 boost::cmatch matches;
-                if(boost::regex_match(message, matches, rainExpression)) {
+                if(boost::regex_match(payload, matches, rainExpression)) {
                     auto rainPoint = processRainMessage(matches);
                     rainPointSubject.get_subscriber().on_next(rainPoint);
                 }
