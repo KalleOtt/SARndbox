@@ -4,9 +4,6 @@
 #include <boost/regex.hpp>
 #include <chrono>
 
-
-using namespace boost; 
-
 regex rainExpression("-rain\\(([0-9]+),([0-9]+)\\)$"); 
 
 Point processRainMessage(cmatch& matches)
