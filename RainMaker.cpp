@@ -294,7 +294,7 @@ void* RainMaker::detectionThreadMethod(void)
 	return 0;
 	}
 
-void RainMaker::setExternalBlobs(&BlobList newExternalList) {
+void RainMaker::setExternalBlobs(std::vector<Point>& newExternalList) {
 	Threads::MutexCond::Lock inputLock(inputCond);
 	externalBlobs.clear();
 	for(int i = 0; i < newExternalList.size(); i++) {
