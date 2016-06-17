@@ -30,7 +30,7 @@ HeightMapStreamServer::HeightMapStreamServer() {
     // Register handler callbacks
     m_server.set_open_handler(bind(&HeightMapStreamServer::on_open,this,::_1));
     m_server.set_close_handler(bind(&HeightMapStreamServer::on_close,this,::_1));
-    m_server.set_message_handler(bind(&HeightMapStreamServer::,this,::_1,::_2));
+    m_server.set_message_handler(bind(&HeightMapStreamServer::on_message,this,::_1,::_2));
     lastFrameTransmission = 0;
 }
 
@@ -114,11 +114,11 @@ void HeightMapStreamServer::on_close(connection_hdl hdl) {
     m_action_cond.notify_one();
 }
 
-void HeightMapStreamServer::(connection_hdl hdl, server::message_ptr msg) {
+void HeightMapStreamServer::on_message(connection_hdl hdl, server::message_ptr msg) {
     // queue message up for sending by processing thread
     {
         lock_guard<mutex> guard(m_action_lock);
-        //std::cout << "" << std::endl;
+        //std::cout << "on_message" << std::endl;
         m_actions.push(action(MESSAGE,hdl,msg));
     }
     m_action_cond.notify_one();
