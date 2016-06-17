@@ -69,7 +69,7 @@ void HeightMapStreamServer::run() {
             .observe_on(threads)
             .subscribe_on(threads)
             .buffer_with_time(TIME_UNIT(10), TIME_UNIT(1))
-            .subscribe([](std::vector<Point> rainPoints){
+            .subscribe([this](std::vector<Point> rainPoints){
                 if(rainMaker) {
                     rainMaker->setExternalBlobs(rainPoints);
                 }
