@@ -23,7 +23,7 @@ Point processPotentialRainMessage(const char* message)
       return Point(double(x), double(y), double(z));
    }
    else{
-     return null;  
+     return NULL;  
    }  
 }
 
