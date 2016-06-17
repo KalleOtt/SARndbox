@@ -237,7 +237,7 @@ void RainMaker::extractBlobs(const Kinect::FrameBuffer& depthFrame,const ValidPi
 			auto point = externalBlobs[i];
 			auto x = point[0];
 			auto y = point[1];
-			auto z = depthFrame.getBuffer()[y*depthFrame.getSize(1)+x];
+			auto z = depthFrame.getBuffer()[((int)y)*depthFrame.getSize(1)+((int)x)];
 			Blob rainBlob;
 			rainBlob.radius = 1;
 			rainBlob.centroid = Point(x, y, z);
